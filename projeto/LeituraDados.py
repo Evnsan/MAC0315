@@ -32,7 +32,7 @@ class Parse:
         self.listArcos = []
     
     def __repr__(self):
-        msg = 'Numero de nos = '+str(self.numeroNos)+'\nNo origem: '+str(self.origem)+'\nNo destino: '+str(self.destino)+'\nProduto escoado '+str(self.produto)+'\n'
+        msg = 'Numero de nos : '+str(self.numeroNos)+'\nNo origem: '+str(self.origem)+'\nNo destino: '+str(self.destino)+'\nProduto escoado : '+str(self.produto)+'\nArcos:\n'
         for arco in self.listArcos:
             msg = msg + str(arco) +' '
         return msg
@@ -51,38 +51,41 @@ class Parse:
     def tokenize(self, valores):
         if(len(valores) == 1):
             valor = self.toInt(valores[0])
-            if(self.x == 0 and valor):
-                self.x = 1
-                self.numeroNos = valor
-            elif(self.x == 1 and valor):
-                self.x = 2
-                self.origem = valor
-            elif(self.x == 2 and valor):
-                self.x = 3
-                self.destino = valor
-            elif(self.x == 3 and valor):
-                self.x = 4
-                self.produto = valor
-            else:
-                print 'fuu-> ' + str(valores)   
+            if(valor):
+                if(self.x == 0):
+                    self.x = 1
+                    self.numeroNos = valor
+                elif(self.x == 1):
+                    self.x = 2
+                    self.origem = valor
+                elif(self.x == 2):
+                    self.x = 3
+                    self.destino = valor
+                elif(self.x == 3):
+                    self.x = 4
+                    self.produto = valor
+                else:
+                    print 'Ja foram avaliados os 4 tokens com apenas um numero, ignorando token: ' + str(valor)   
         elif(len(valores) == 3):
             val = [self.toInt(x) for x in valores if self.toInt(x)]
             if(len(val) == 3):
                 self.listArcos.append(val)
         else:
-            print 'fuuuu :' + str(valores)
+            print 'Token invalido (numero incorreto de paramentros): ' + str(valores)
     
     def toInt(self, val):
         try:
             return int(val)
         except:
-            print 'fuuu aqui oh ' + str(val)
+            print 'Token invalido (nao pode ser tranformado em int): ' + str(val)
 
 try:
     f = open('problema.dat', 'r')
     p = Parse()
     for line in f:
-        p.tokenize(p.preParse(line))
+        val = p.preParse(line)
+        if(len(val) > 0):
+            p.tokenize(val) 
     print p
     f.close()
 except IOError:
