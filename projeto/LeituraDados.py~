@@ -77,7 +77,7 @@ class Parse:
         try:
             return int(val)
         except:
-            print 'Token invalido (nao pode ser transformado em int): ' + str(val)
+            print 'Token invalido (nao pode ser tranformado em int): ' + str(val)
 
 try:
     f = open('problema.dat', 'r')
