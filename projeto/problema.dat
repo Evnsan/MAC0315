@@ -1,3 +1,8 @@
+# comentarios iniciam-se com '#'
+# palavras são separadas por espaços
+# qualquer palavra que contenha algo diferente de numeros é ignorada
+# o programa de leitura procura pelas 4 primeiras linhas com apenas um número e todas as linhas com 3 números
+
 101010 
 12312431234
 1234213i
