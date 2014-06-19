@@ -62,7 +62,7 @@ class grafo:
 #-----------------------------------------------------------
 class arco:
 
-    def __init__(self, inicio, final, fluxo):
+    def __init__(self, inicio, final, custo, fluxo):
              
         if(isinstance(inicio, int)):
             self.inicio = inicio 
@@ -74,6 +74,12 @@ class arco:
             self.final = final     
         else:
             msg = 'ARCO - Tipo invalido para iniciar ponta final do arco, deve ser <type int> e recebeu '+ str(type(final))
+            raise Erro_de_tipo(msg)
+            
+        if(isinstance(custo, int)):
+            self.custo = custo 
+        else:
+            msg = 'ARCO - Tipo invalido para iniciar custo do arco, deve ser <type int> e recebeu '+ str(type(custo))
             raise Erro_de_tipo(msg)
             
         if(isinstance(fluxo, int)):
@@ -96,32 +102,38 @@ class arco:
     def getFinal(self):
         return self.final
 
+    def getCusto(self):
+        return self.custo
+
     def __repr__(self):
-        return '%s ---- > %s (%d)' % (self.inicio, self.final, self.fluxo)
+        return '%s --> %s (custo: %d |fluxo: %d)' % (self.inicio, self.final, self.custo, self.fluxo)
         
 #-----------------------------------------------------------
 
-class parnt:
+class arvoreGer:
     def __init__(self, numVertices):
         if(type(numVertices) is int):
-            self.vetor = [0] * numVertices
-
-    def setVerticeParnt(self, v, arc):
-        if(type(v) is int):
+            self.parnt = [0] * numVertices
+            self.y = [0] * numVertices
+            
+    def setVerticeArvoreGer(self, v, arc, y):
+        if(type(v) is int and v < len(self.parnt)):
             if(isinstance(arc, arco)):
                 if( arc.getInicio() == v):
-                            self.vetor[v] = arc
+                            self.parnt[v] = arc
+                            self.y[v] = y
                 elif(arc.getFinal() == v):
-                            self.vetor[v] = arc
+                            self.parnt[v] = arc
+                            self.y[v] = y
                 else:
-                    msg = 'PARNT - o vetor parnt deve receber arcos nos quais a ponta final ou inicial seja o indice v = ' + str(v)
+                    msg = 'ARVOREGER - o vetor parnt deve receber arcos nos quais a ponta final ou inicial seja o indice v = ' + str(v)
                     raise Erro_de_consistencia(msg)
             else:
-                msg = 'PARNT - Tipo invalido para determinar arco do vetor['+str(v)+'], arc deve ser <type arco> e recebeu ' + str(type(arc))
+                msg = 'ARVOREGER - Tipo invalido para determinar arco do parnt['+str(v)+'], arc deve ser <type arco> e recebeu ' + str(type(arc))
                 raise Erro_de_tipo(msg)
         else:
-            msg = 'PARNT - Tipo invalido para determinar vertice do vetor[], vertice deve ser <type int> e recebeu ' + str(type(v))
+            msg = 'ARVOREGER - Tipo invalido para determinar vertice do parnt[], vertice deve ser <type int> e recebeu ' + str(type(v))
             raise Erro_de_tipo(msg)
 
     def __repr__(self):
-        return '%s' % self.vetor
+        return 'Arcos: %s \nY: %s' % (self.parnt, self.y)
