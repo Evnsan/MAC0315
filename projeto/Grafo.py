@@ -35,7 +35,7 @@ class Erro_de_consistencia(Exception):
         return repr(self.value)
 
 #-----------------------------------------------------------
-class vertice:
+class Vertice:
     def __init__(self, demanda):
         if(type(demanda) is int):
             self.demanda = demanda   
@@ -47,20 +47,20 @@ class vertice:
             return self.demanda
 
     def __repr__(self):
-        return '%d' % self.demanda
+        return 'Demanda: %d' % self.demanda
             
 #-----------------------------------------------------------
-class grafo:
+class Grafo:
     def __init__(self, vertices):
         if(isinstance(vertices, list)):
             self.vetor = []
             i = 0
             for v in vertices:
-                if(isinstance(v, vertice)):
+                if(isinstance(v, Vertice)):
                     self.vetor.append(v)
                     i= i+1
                 else:
-                    msg = 'GRAFO - Tipo invalido para iniciar grafo, vertice['+str(i)+'] deve ser <type vertice> e recebeu '+ str(type(v))
+                    msg = 'GRAFO - Tipo invalido para iniciar grafo, Vertice['+str(i)+'] deve ser <type Vertice> e recebeu '+ str(type(v))
                     raise Erro_de_tipo(msg) 
             self.nVertices = i        
         else:
@@ -82,9 +82,9 @@ class grafo:
         
         
 #-----------------------------------------------------------
-class arco:
+class Arco:
 
-    def __init__(self, inicio, final, custo, fluxo):
+    def __init__(self, inicio, final, custo, fluxo): # aninhar if's
              
         if(isinstance(inicio, int)):
             self.inicio = inicio 
@@ -109,7 +109,6 @@ class arco:
         else:
             msg = 'ARCO - Tipo invalido para iniciar fluxo no arco, deve ser <type int> e recebeu '+ str(type(inicio))
             raise Erro_de_tipo(msg)
-
             
     def setFluxo(self, fluxo):
         if(isinstance(fluxo, int)):
@@ -132,30 +131,73 @@ class arco:
         
 #-----------------------------------------------------------
 
-class arvoreGer:
+class ArvoreGer:
     def __init__(self, numVertices):
         if(type(numVertices) is int):
+            self.arvoreArc = [0] * numVertices
             self.parnt = [0] * numVertices
-            self.y = [0] * numVertices
             
-    def setVerticeArvoreGer(self, v, arc, y):
-        if(type(v) is int and v < len(self.parnt)):
-            if(isinstance(arc, arco)):
+    def setVertice(self, v, arc):
+        if(type(v) is int and v < len(self.parnt)): # separar os erros
+            if(isinstance(arc, Arco)):
                 if( arc.getInicio() == v):
-                            self.parnt[v] = arc
-                            self.y[v] = y
+                            self.arvoreArc[v] = arc
+                            self.parnt[v] = arc.getFinal()
+                                
                 elif(arc.getFinal() == v):
-                            self.parnt[v] = arc
-                            self.y[v] = y
+                            self.arvoreArc[v] = arc
+                            self.parnt[v] = arc.getInicio()
                 else:
                     msg = 'ARVOREGER - o vetor parnt deve receber arcos nos quais a ponta final ou inicial seja o indice v = ' + str(v)
                     raise Erro_de_consistencia(msg)
             else:
-                msg = 'ARVOREGER - Tipo invalido para determinar arco do parnt['+str(v)+'], arc deve ser <type arco> e recebeu ' + str(type(arc))
+                msg = 'ARVOREGER - Tipo invalido para determinar arco do parnt['+str(v)+'], arc deve ser <type Arco> e recebeu ' + str(type(arc))
                 raise Erro_de_tipo(msg)
         else:
             msg = 'ARVOREGER - Tipo invalido para determinar vertice do parnt[], vertice deve ser <type int> e recebeu ' + str(type(v))
             raise Erro_de_tipo(msg)
+    
+    
+    # Este metodo devolve o rank do vartice informado. Def: rank da raiz = 0, o rank de
+    # qualquer outro vertice e o rank do pai mais 1.
+    def findRank(self, vertice):
+        if(vertice < len(self.parnt)):
+            rank = 0
+            while( self.getParnt(vertice) != vertice):
+                rank = rank + 1
+                vertice = self.getParnt(vertice)
+            return rank
+        else:
+            print 'erro'
+            #erro
+    
+    # Este metodo devolve o pai do vertice informado. Def: pai da raiz e a propria raiz,
+    # definido pelo arco que faz o loop raiz --> raiz.
+    def getParnt(self, vertice):
+        if(vertice < len(self.parnt)):
+            return self.parnt[vertice]
+        else:
+            print 'erro'
+            #erro
+    
+    # Este metodo devolve o potencial do vertice informado. Def: potencial da raiz = 0, o
+    # potencial de qualquer outro vertice e o potencial do pai mais o custo do arco utili-
+    # zado.
+    def getY(self, vetice):
+        if(vetice < len(self.parnt)):
+            y = 0
+            while(self.getParnt(vetice) != vetice):
+                arc = self.arvoreArc[vetice]
+                if(arc.getInicio() == vetice):
+                    y = y - arc.getCusto()
+                else:
+                    y = y + arc.getCusto()
+                vetice = self.getParnt(vetice)
+            return y
+        else:
+            #erro
+            print 'erro'
 
+        
     def __repr__(self):
         return 'Arcos: %s \nY: %s' % (self.parnt, self.y)
