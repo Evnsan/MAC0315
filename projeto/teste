@@ -1,6 +1,0 @@
-from SimplexRede import *
-d = Simplex()
-a = ArvoreGer(2)
-b = [Arco(2,3,4,5)]
-c = [Vertice(3)]
-d.otmizar(a,b,c)
