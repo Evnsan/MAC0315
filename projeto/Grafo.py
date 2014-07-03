@@ -125,6 +125,9 @@ class Arco:
 
     def getCusto(self):
         return self.custo
+        
+    def getFluxo(self):
+        return self.fluxo
 
     def __repr__(self):
         return '%s --> %s (custo: %d |fluxo: %d)' % (self.inicio, self.final, self.custo, self.fluxo)
@@ -159,8 +162,8 @@ class ArvoreGer:
     
     
     # Este metodo devolve o rank do vartice informado. Def: rank da raiz = 0, o rank de
-    # qualquer outro vertice e o rank do pai mais 1.
-    def findRank(self, vertice):
+    # qualquer outro vertice e o rank do pai mais 1. Obs: usando tecnica de FIND
+    def getRank(self, vertice):
         if(vertice < len(self.parnt)):
             rank = 0
             while( self.getParnt(vertice) != vertice):
@@ -180,9 +183,18 @@ class ArvoreGer:
             print 'erro'
             #erro
     
+    # Este metodo devolve o arco utilizado para ligar o vertice informado ao pai deste na
+    # arvore geradora.
+    def getArc(self, vertice):
+        if(vertice < len(self.parnt)):
+            return self.arvoreArc[vertice]
+        else:
+            print 'erro'
+            #erro
+    
     # Este metodo devolve o potencial do vertice informado. Def: potencial da raiz = 0, o
     # potencial de qualquer outro vertice e o potencial do pai mais o custo do arco utili-
-    # zado.
+    # zado. Obs: usando tecnica de FIND
     def getY(self, vetice):
         if(vetice < len(self.parnt)):
             y = 0
@@ -197,7 +209,10 @@ class ArvoreGer:
         else:
             #erro
             print 'erro'
-
+    
+    # Metodo auxiliar que devolve o numero de vertices na arvore
+    def getNumVertice(self):
+        return len(self.parnt)
         
     def __repr__(self):
         return 'Arcos: %s \nY: %s' % (self.parnt, self.y)

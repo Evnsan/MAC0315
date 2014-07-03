@@ -1,0 +1,259 @@
+#! /bin/python
+
+
+################################################################
+#                                                              #
+# Copyright 2014 MAC0315-PROJECT                               #
+#                                                              #
+# Licensed under the Apache License, Version 2.0               #
+# (the "License"); you may not use this file except in         #
+# compliance with the License. You may obtain a copy of the    #
+# License at                                                   #
+#                                                              #
+# http://www.apache.org/licenses/LICENSE-2.0                   #
+#                                                              #
+# Unless required by applicable law or agreed to in writing,   #
+# software distributed under the License is distributed on     #
+# an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY    #
+# KIND, either express or implied.                             #
+# See the License for the specific language governing          #
+# permissions and limitations under the License.               #
+#                                                              #
+################################################################
+
+
+from Grafo import *
+
+# Regras:
+#   Fluxos sempre positivos ou substituir flux = flux + arc.getFluxo() por
+#  flux = max (flux + arc.getFluxo(), flux - arc.getFluxo())
+
+
+
+# Esta classe recebe uma instacia de arvore geradora e uma colecao de vertices nao perten-
+# centes a arvore, ambos especificados no arquivo Grafo.py. O algoritmo, entao, substitui
+# os arcos da arvore pelos arcos de fora dela ate encontrar uma arvore de custo minimo.
+class Simplex:
+#    __init(self):
+    def otmizar(self, arvore, pilha):
+        #### Tratamento da entrada
+        if(isinstance(arvore, ArvoreGer)):
+            if(isinstance(pilha, list)):
+                flux = 0
+                for arc in pilha:
+                    if(not isinstance(arc, Arco)):
+                        msg = 'SIMPLEX - Tipo invalido para determinar elemento da pilha de arcos fora da arvore, deveria receber '+ str(Arco) +' e recebeu ' + str(type(arc))
+                        raise Erro_de_tipo(msg)
+                    else:
+                        flux = flux + arc.getFluxo() # fluxo é sempre positivo sempre po-
+                        # sitivo
+            #### Quebra no Tratamento de entrada                
+                    
+                # Configurando Constantes
+                FLUXOMAX = flux # Limite superior para os fluxos
+                
+                # Para verificar de qual ramo vem o arco removido
+                # True = Inicio / False = Final
+                INICIO = True
+                FINAL = False        
+                
+                        
+                # Simplex 
+                aux = [] # pilha auxiliar para guardar arcos ja avaliados.
+                verticeCheck = [False] * arvore.getNumVertice() # vetor booleano para che-
+                # car se o potencial do vertice especifico ja foi calculado. Guarda True
+                # /False (se os valores foram calculados) ate um novo arco entrar na arvo-
+                # re.
+                y = [0] * arvore.getNumVertice() # vetor de inteiros para guardar os po-
+                # tenciais calculados de  cada vertice. Guarda estes valores ate um novo
+                # arco entrar na arvore.
+                
+                
+                while(pilha):
+                    arc = pilha.pop(0)
+                    inicio = arc.getInicio()
+                    final = arc.getFinal()
+                    
+                    # Trecho de codigo para eliminar calculos repetitivos : se os poten-
+                    # ciais ainda nao foram calculados, calcular
+                    if(not verticeCheck[inicio]):
+                        y[inicio] = arvore.getY(inicio)
+                        verticeCheck[inicio] = True
+                    if(not verticeCheck[final]):
+                        y[inicio] = arvore.getY(final)
+                        verticeCheck[final] = True
+                    
+                    # Avaliacao do arco a entrar na arvore
+                    if(y[inicio] + arc.getCusto() < y[final]):
+                        # Se o arco melhora o potencial, colocamos ele na arvore e remove-
+                        # mos o arco de menor fluxo em sentido oposto no ciclo (obs menor
+                        # fluxo porque nao existem capacidades)
+
+                        
+                        # Achar ciclo ################
+                        rankInicio = getRank(inicio) # rank do vertice apontado por Inicio
+                        rankFinal = getRank(final) # rank do vertice apontado por Final
+                        minFluxo = FLUXOMAX  # sera o delta
+                        RamoArcoRemovido = INICIO # Para verificar de qual ramo vem o arco
+                        # removido
+                        arcoRemovico = None # variavel que guardara o arco a ser removido
+                        # do ciclo
+                        arcCiclo = None # variavel auxiliar para apontar o arco a ser ana- 
+                        # lisado no ciclo
+                        
+                        while(inicio != final):
+                            if(rankInicio > rankFinal):
+                                arcCiclo = arvore.getArc(inicio)
+                                                                
+                                # guardar o arco no sentido oposto com menor fluxo ate o 
+                                # momento
+                                if(arcCiclo.getInicio() == inicio && arcCiclo.getFluxo() < minFluxo):
+                                    RamoArcoRemovido = INICIO
+                                    arcoRemovico = arcCiclo
+                                inicio = inicio.getParnt()
+                                rankInicio = rankInicio - 1
+                            
+  
+                            elif(rankInicio < rankFinal):
+                                arcCiclo = arvore.getArc(final)
+                                
+                                # guardar o arco no sentido oposto com menor fluxo ate o 
+                                # momento
+                                if(arcCiclo.getFinal() == final && arcCiclo.getFluxo() < minFluxo):
+                                    RamoArcoRemovido = FINAL
+                                    arcoRemovico = arcCiclo
+                                final = final.getParnt()
+                                rankFinal = rankFinal - 1
+                                    
+  
+                            else:
+                                # avaliar arco do final
+                                arcCiclo = arvore.getArc(final)
+                                # guardar o arco no sentido oposto com menor fluxo ate o 
+                                # momento
+                                if(arcCiclo.getFinal() == final && arcCiclo.getFluxo() < minFluxo):
+                                    RamoArcoRemovido = FINAL
+                                    arcoRemovido = arcCiclo
+
+                                # avaliar arco do inicio
+                                arcCiclo = arvore.getArc(inicio)
+                                # guardar o arco no sentido oposto com menor fluxo ate o 
+                                # momento
+                                if(arcCiclo.getInicio() == inicio && arcCiclo.getFluxo() < minFluxo):
+                                    RamoArcoRemovido = INICIO
+                                    arcoRemovido = arcCiclo
+                                
+                                # ir para os pais
+                                final = final.getParnt()
+                                rankFinal = rankFinal - 1
+                                
+                                inicio = inicio.getParnt()
+                                rankInicio = rankInicio - 1
+                        ######################## Fim Achar ciclo                    
+                        
+                        # Arrumar fluxos do ciclo ################
+                        inicio = arc.getInicio()
+                        final = arc.getFinal()  
+                        rankInicio = getRank(inicio) # rank do vertice apontado por Inicio
+                        rankFinal = getRank(final) # rank do vertice apontado por Final
+                        arc.setFluxo(minFluxo)
+                        arcoRemovido.setFluxo(arcCiclo.getFluxo() - minFluxo)
+                        while(inicio != final):
+                            if(rankInicio > rankFinal):
+                                arcCiclo = arvore.getArc(inicio)
+                                if(arcCiclo.getInicio() == inicio): # somar ou subtrair
+                                # fluxo depende do sentido do arco
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() - minFluxo)
+                                else:
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() + minFluxo)
+                                inicio = inicio.getParnt()
+                                rankInicio = rankInicio - 1
+                            
+  
+                            elif(rankInicio < rankFinal):
+                                arcCiclo = arvore.getArc(final)
+                                if(arcCiclo.getFinal() == final): # somar ou subtrair
+                                # fluxo depende do sentido do arco
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() - minFluxo)
+                                else:
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() + minFluxo)
+                                final = final.getParnt()
+                                rankFinal = rankFinal - 1
+                                    
+  
+                            else:
+                                # avaliar arco do final
+                                elif(rankInicio < rankFinal):
+                                arcCiclo = arvore.getArc(final)
+                                if(arcCiclo.getFinal() == final): # somar ou subtrair
+                                # fluxo depende do sentido do arco
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() - minFluxo)
+                                else:
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() + minFluxo)
+
+                                # avaliar arco do inicio
+                                arcCiclo = arvore.getArc(inicio)
+                                if(arcCiclo.getInicio() == inicio): # somar ou subtrair
+                                # fluxo depende do sentido do arco
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() - minFluxo)
+                                else:
+                                    arcCiclo.setFluxo(arcCiclo.getFluxo() + minFluxo)
+                                
+                                # ir para os pais
+                                final = final.getParnt()
+                                rankFinal = rankFinal - 1
+                                
+                                inicio = inicio.getParnt()
+                                rankInicio = rankInicio - 1
+                        ######################## Fim Arrumar fluxos do ciclo
+                        
+                        ################ Arrumar pai e arvore.arc do ciclo
+                        pai =  None
+                        filho = None
+                        arcC = None # guarda o antigo arco do vertice avaliado
+                        vertC = None # guarda o antigo pai do vertice avaliado
+                        
+                        if(RamoArcoRemovido): # if(RamoArcoRemovido == INICIO)
+                            verticeParada = arcoRemovido.getFinal()
+                            filho = inicio
+                            pai = final
+                       
+                        else:
+                            verticeParada = arcoRemovido.getInicio()
+                            filho = final
+                            pai =  inicio
+                        
+                        while( filho != verticeParada )
+                            arcC = arvore.getArc(filho)
+                            vertC = arvore.getParnt(filho)
+                            arvore.setArc(filho, arc)
+                            arvore.setParnt(filho, pai)
+                            arc = arcC
+                            pai = filho
+                            filho = vertC
+                        ######################## Fim Arrumar pai e arvore.arc do ciclo
+                        
+                                                
+                        # Se arc vai entrar na Arvore, entao precisamos reiniciar a ava-
+                        # liacao dos arcos ( arcos de aux retornam para a pilha )
+                        while(aux):
+                            arc = aux.pop(0)
+                            pilha.append(arc)
+                        arc.append(arcoRemovido) # e o arco que saio vai para a pilha
+                        # Tambem e necessario refazer os calculos de potenciais
+                        verticeCheck = [False] * arvore.getNumVertice()
+                        y = [0] * arvore.getNumVertice()
+                        
+                    else:
+                        aux.append(arc)
+                print aux
+                
+                
+            #### Retomada do Tratamento de entrada
+            else:
+                msg = 'SIMPLEX - Tipo invalido para determinar pilha de arcos fora da arvore, pilha deve ser uma lista de '+ str(Arco) +' e recebeu ' + str(type(pilha))
+                raise Erro_de_tipo(msg)
+        else:
+            msg = 'SIMPLEX - Tipo invalido para determinar ArvoreGeradora, arvore deve ser ' + str(ArvoreGer) + ' e recebeu ' + str(type(arvore))
+            raise Erro_de_tipo(msg)
+        #### Final do tratamento de entrada
