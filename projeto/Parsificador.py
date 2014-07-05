@@ -42,7 +42,7 @@ class parse:
     def tokenize(self, valores):
         if(len(valores) == 1):
             valor = self.toInt(valores[0])
-            if(valor):
+            if(valor != None):
                 if(self.t.getX() == 0):
                     self.t.setX(1)
                     self.t.setNumeroNos(valor)
@@ -58,7 +58,7 @@ class parse:
                 else:
                     print 'Ja foram avaliados os 4 tokens com apenas um numero, ignorando token: ' + str(valor)   
         elif(len(valores) == 3):
-            val = [self.toInt(x) for x in valores if self.toInt(x)]
+            val = [self.toInt(x) for x in valores if (self.toInt(x) != None)]
             if(len(val) == 3):
                 self.t.addArcos(val)
         else:
@@ -137,8 +137,4 @@ class tokens:
         for arco in self.listArcos:
             msg = msg + str(arco) +' '
         return msg
-
-p = parse()
-t = p.execParse('problema.dat')
-print t
         

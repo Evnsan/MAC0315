@@ -3,8 +3,8 @@ d = Simplex()
 #from Grafo import *
 a = ArvoreGer(5)
 
-b = [Arco(0,0,0,0) , Arco(0,1,2,3) , Arco(2,0,3,4) , Arco(3,2,4,5) , Arco(2,4,5,6)]
-c = [Arco(0,3,-10,0)]
+b = [Arco(0,0,0,0) , Arco(0,1,2,3) , Arco(0,2,3,3) , Arco(1,3,4,5) , Arco(2,4,5,6)]
+c = [Arco(3,4,0,0)]
 
 a.setVertice( 0, b[0])
 a.setVertice( 1, b[1])

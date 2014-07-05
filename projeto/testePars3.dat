@@ -1,0 +1,17 @@
+# comentarios iniciam-se com '#'
+# palavras são separadas por espaços
+# qualquer palavra que contenha algo diferente de numeros é ignorada
+# o programa de leitura procura pelas 4 primeiras linhas com apenas um número e todas as linhas com 3 números
+
+101010 
+12312431234
+1234213i
+134
+1341234234 #1341234
+99999
+23948 23498 2349a
+1324234 134# ajsdhdjkahs
+1324235 457 2354 #çkdsja #lashd las#
+12423154 34747 568458s
+32453247 85686789 6759679
+32453 76547 3476  678

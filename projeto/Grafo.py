@@ -139,6 +139,7 @@ class ArvoreGer:
         if(type(numVertices) is int):
             self.arvoreArc = [0] * numVertices
             self.parnt = [0] * numVertices
+            self.raiz = None
             
     def setVertice(self, v, arc):
         if(type(v) is int and v < len(self.parnt)): # separar os erros
@@ -151,7 +152,7 @@ class ArvoreGer:
                             self.arvoreArc[v] = arc
                             self.parnt[v] = arc.getInicio()
                 else:
-                    msg = 'ARVOREGER - o vetor parnt deve receber arcos nos quais a ponta final ou inicial seja o indice v = ' + str(v)
+                    msg = 'ARVOREGER - o vetor parnt deve receber arcos nos quais a ponta final ou inicial seja o indice v = ' + str(v) + ' e recebeu ' + str(arc)
                     raise Erro_de_consistencia(msg)
             else:
                 msg = 'ARVOREGER - Tipo invalido para determinar arco do parnt['+str(v)+'], arc deve ser <type Arco> e recebeu ' + str(type(arc))
@@ -214,5 +215,24 @@ class ArvoreGer:
     def getNumVertice(self):
         return len(self.parnt)
         
+    # Metodo auxiliar que devolve a raiz da arvore
+    def getRaiz(self):
+        return self.raiz
+        
+    # Metodo auxiliar para definir a raiz da arvore
+    def setRaiz(self, vertice):
+        if(vertice < len(self.parnt)):
+            self.raiz = vertice
+            self.setVertice(vertice, Arco(vertice, vertice, 0, 0))
+
+    # Metodo para retornar um limitante superior para o fluxo
+    def getFluxoMaximo(self):
+        maxFlux = 0
+        for arc in self.arvoreArc:
+            maxFlux = maxFlux + arc.getFluxo()
+        return maxFlux
+          
+    
     def __repr__(self):
-        return 'Arcos: %s \nY: %s' % (self.parnt, self.y)
+        retorno = self.arvoreArc[1::]
+        return 'Arcos: %s' % (retorno)
