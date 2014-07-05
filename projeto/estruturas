@@ -24,6 +24,9 @@ Arco
 |--------------------------------|
 
 
+# Para facilitar a resolucao, as seguintes estruturas foram desconsideradas
+# nesta fase. Sendo substituidas por listas de arcos(grafo) e inteiros(vertices)
+
 Vertice
 |--------------------------------|
 |                                |

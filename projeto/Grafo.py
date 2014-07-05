@@ -83,6 +83,7 @@ class Grafo:
         
 #-----------------------------------------------------------
 class Arco:
+    numArcos = 0
 
     def __init__(self, inicio, final, custo, fluxo): # aninhar if's
              
@@ -109,13 +110,17 @@ class Arco:
         else:
             msg = 'ARCO - Tipo invalido para iniciar fluxo no arco, deve ser <type int> e recebeu '+ str(type(inicio))
             raise Erro_de_tipo(msg)
+        self.id = Arco.numArcos
+        Arco.numArcos = Arco.numArcos + 1
+
             
     def setFluxo(self, fluxo):
         if(isinstance(fluxo, int)):
             self.fluxo = fluxo    
         else:
-            msg = 'ARCO - Tipo invalido para determinar fluxo no arco, deve ser <type int> e recebeu '+ str(type(inicio))
+            msg = 'ARCO - Tipo invalido para determinar fluxo no arco, deve ser <type int> e recebeu '+ str(type(fluxo))
             raise Erro_de_tipo(msg)
+        
 
     def getInicio(self):
         return self.inicio
@@ -125,9 +130,29 @@ class Arco:
 
     def getCusto(self):
         return self.custo
+    
+    def setCusto(self, custo):
+        if(isinstance(custo, int)):
+            self.custo = custo    
+        else:
+            msg = 'ARCO - Tipo invalido para determinar custo no arco, deve ser <type int> e recebeu '+ str(type(custo))
+            raise Erro_de_tipo(msg)
         
     def getFluxo(self):
         return self.fluxo
+        
+    def getId(self):
+        return self.id
+    
+    # Metodo para usar arcos como key de dicionarios
+    def __hash__(self):
+        return hash(self.id)
+        
+    # Metodo para comparar arcos. Para o hash
+    def __eq__(self, other):
+        return self.id == other.id
+        
+        
 
     def __repr__(self):
         return '%s --> %s (custo: %d |fluxo: %d)' % (self.inicio, self.final, self.custo, self.fluxo)
@@ -142,7 +167,7 @@ class ArvoreGer:
             self.raiz = None
             
     def setVertice(self, v, arc):
-        if(type(v) is int and v < len(self.parnt)): # separar os erros
+        if(type(v) is int and v < len(self.parnt)):
             if(isinstance(arc, Arco)):
                 if( arc.getInicio() == v):
                             self.arvoreArc[v] = arc
@@ -158,8 +183,12 @@ class ArvoreGer:
                 msg = 'ARVOREGER - Tipo invalido para determinar arco do parnt['+str(v)+'], arc deve ser <type Arco> e recebeu ' + str(type(arc))
                 raise Erro_de_tipo(msg)
         else:
-            msg = 'ARVOREGER - Tipo invalido para determinar vertice do parnt[], vertice deve ser <type int> e recebeu ' + str(type(v))
-            raise Erro_de_tipo(msg)
+            if(isinstance(v, int)):
+                msg = 'ARVOREGER - Valor invalido para determinar vertice do parnt[], vertice deve ser < '+ str(len(self.parnt)) +' e recebeu ' + str(v)
+                raise Erro_de_consistencia(msg)
+            else:
+                msg = 'ARVOREGER - Tipo invalido para determinar vertice do parnt[], vertice deve ser <type int> e recebeu ' + str(type(v))
+                raise Erro_de_tipo(msg)
     
     
     # Este metodo devolve o rank do vartice informado. Def: rank da raiz = 0, o rank de

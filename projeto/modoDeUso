@@ -1,0 +1,23 @@
+Mantenha em uma única pasta os arquivos:
+EP.py
+Grafo.py
+Parsificador.py
+SimplexRede.py
+problema.dat
+
+Utilizando o terminal:
+- navegue até a sua pasta
+SeuPrompt# cd caminha/para/minha/pasta
+
+- chame o python passando como argumento o modulo principa
+SeuPrompt# python EP
+
+
+Pronto.
+
+Para mudar o arquivo de entrada:
+Modo 1)
+Substituir problema.dat pelo seu problema
+
+Modo2)
+editar o valor da constante arquivoEntrada no modulo EP.py
